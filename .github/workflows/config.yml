@@ -47,7 +47,7 @@ jobs:
           git config --global user.name ${{ secrets.USERNAME }}
           git config --global user.email ${{ secrets.EMAIL }}
           git add preprocessing/nilai_mahasiswa-preprocessed.csv
-          git commit -m "preprocessing data gitAction" || true
+          git commit -m "preprocessing data gitAction #1" || true
           git push origin main
 
       # Save model in Local Github
@@ -59,7 +59,7 @@ jobs:
       # Run as a mlflow project
       - name: Run mlflow project
         run: |
-          mlflow run MLproject --env-manager=local
+          mlflow run MLProject --env-manager=local
 
       # Save models to GitHub Repository
       - name: Save mlruns to repo Github (kriteria 3)
@@ -67,5 +67,5 @@ jobs:
           git config --global user.name ${{ secrets.USERNAME }}
           git config --global user.email ${{ secrets.EMAIL }}
           git add -f mlruns/
-          git commit -m "Save mlruns from gitAction" || true
+          git commit -m "Save mlruns from gitAction #3" || true
           git push origin main

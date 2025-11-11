@@ -1,10 +1,9 @@
-# train Model & up to Github Repo & Docker
+# Deep Learning CF
+# hanya pakai autolog
 import os
-
 import pandas as pd
 import numpy as np
 import mlflow
-from mlflow.models import infer_signature
 import mlflow.tensorflow
 from tensorflow import keras
 from tensorflow.keras import layers
@@ -57,11 +56,22 @@ model = KerasRegressor(
     model=lambda: build_ncf_model(n_users, n_items), epochs=10, batch_size=32, verbose=1
 )
 
-# mlflow.set_tracking_uri(os.path.join(base_dir, "mlruns"))
+# ======================================================
+# 🧠 MLflow Tracking
+# ======================================================
 
-with mlflow.start_run() as run:
+# Set URI lokal (atau bisa diganti ke server remote)
+# mlflow.set_tracking_uri("file://" + os.path.join(base_dir, "mlruns"))
+mlflow.set_tracking_uri("http://127.0.0.1:5000/")
 
+# Set nama eksperimen
+mlflow.set_experiment("NCF_Modelling")
+
+
+with mlflow.start_run(run_name="build_modelling") as run:
     print(f"🎯 MLflow Run ID: {run.info.run_id}")
+    # Aktifkan autolog untuk TensorFlow
+    mlflow.tensorflow.autolog()
 
     # --- Train model
     model.fit(X_train, y_train)
@@ -70,19 +80,15 @@ with mlflow.start_run() as run:
     y_pred = model.predict(X_test)
     rmse = np.sqrt(mean_squared_error(y_test, y_pred))
     print(f"✅ RMSE: {rmse:.4f}")
-    
-    # infer signature dari input dan output model
-    y_pred_sample = model.model_.predict(X_train[:5])
-    signature = infer_signature(X_train[:5], y_pred_sample)
 
-    # --- Simpan model
-    mlflow.keras.log_model( # papaki tensorflow tidak menyimpan conda.yaml
-        model.model_,  # scikeras wrapper punya atribut .model_
-        name="model",
-        signature=signature
-    )
-    
     # --- Log metrik manual juga (opsional)
     mlflow.log_metric("rmse", rmse)
+
+    # --- Simpan model
+    mlflow.tensorflow.log_model(
+        model.model_,  # scikeras wrapper punya atribut .model_
+        name="model",
+        registered_model_name="NCF_Rekomendasi_Mahasiswa",
+    )
 
 print("🚀 Training & Logging selesai.")

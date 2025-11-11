@@ -1,5 +1,6 @@
 mlruns/
 mlartifacts/ 
 
+.env
 preprocessing/nilai_mahasiswa-preprocessed-py.csv
 preprocessing/nilai_mahasiswa-preprocessed-ipynb.csv
