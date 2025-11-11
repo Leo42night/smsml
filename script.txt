@@ -6,7 +6,7 @@ conda create -n ncf-env python=3.12
 conda activate ncf-env
 
 # Install Dependensi
-pip install numpy pandas scikit-learn tensorflow scikeras mlflow
+pip install numpy pandas scikit-learn tensorflow scikeras mlflow python-dotenv
 
 # buat Conda.yaml
 conda env export --from-history > conda.yaml
@@ -22,9 +22,9 @@ conda activate ncf-env && mlflow server --host 127.0.0.1 --port 5000
 conda activate ncf-env && python Membangun_model\modelling.py
 conda activate ncf-env && python Membangun_model\modelling_tuning.py
 conda activate ncf-env && mlflow run MLProject --env-manager=local
-
+python Membangun_model\model_tun.py(2025-11-12 05:17:00 - )
 # preprocessing
-python preprocessing\automate_LeoPrangsT.py
+conda activate ncf-env && python MLProject\modelling.py
 
 # MLproject (Github Action Docker Hub)
 python MLProject\modelling.py
@@ -38,6 +38,10 @@ mlflow server --host 127.0.0.1 --port 5000
 python Membangun_model\modelling.py
 python Membangun_model\modelling_tuning.py
 conda activate ncf-env && python Membangun_model\model_tun.py
+
+
+# test mlflow model service
+mlflow models serve -m mlruns/0/models/m-fcdb6c123cb747aca341bfe1977334fc -p 1234 --no-conda
 
 # lihat UI mlflow
 mlflow ui
