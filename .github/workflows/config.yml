@@ -51,10 +51,10 @@ jobs:
           git push origin main
 
       # Save model in Local Github
-      - name: Install dependencies mlflow
+      - name: Install dependencies mlflow & rest
         run: |
           python -m pip install --upgrade pip
-          pip install mlflow
+          pip install numpy tensorflow scikeras mlflow
       
       # Run as a mlflow project
       - name: Run mlflow project
