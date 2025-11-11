@@ -18,13 +18,13 @@ jobs:
 
     steps:
       - uses: actions/checkout@v4
-      #   with:
-      #     lfs: true   # <--- ini penting, otomatis ambil file LFS
+        with:
+          lfs: true   # <--- ini penting, otomatis ambil file LFS
 
-      # - name: Install Git LFS manually
-      #   run: |
-      #     git lfs install
-      #     git lfs pull
+      - name: Install Git LFS manually
+        run: |
+          git lfs install
+          git lfs pull
 
       # Setup Python 3.12.12
       - name: Set up Python 3.12.12
@@ -50,12 +50,7 @@ jobs:
           git commit -m "preprocessing data gitAction" || true
           git push origin main
 
-      # - name: Check Env
-      #   run: |
-      #     echo $CSV_URL
-
       # Save model in Local Github
-      # Install mlflow
       - name: Install dependencies mlflow
         run: |
           python -m pip install --upgrade pip
@@ -64,13 +59,13 @@ jobs:
       # Run as a mlflow project
       - name: Run mlflow project
         run: |
-          mlflow run MLproject --env-manager=local 
+          mlflow run MLproject --env-manager=local
 
       # Save models to GitHub Repository
-      - name: Save mlruns to repo
+      - name: Save mlruns to repo Github (kriteria 3)
         run: |
           git config --global user.name ${{ secrets.USERNAME }}
           git config --global user.email ${{ secrets.EMAIL }}
           git add -f mlruns/
-          git commit -m "Save mlruns from CI run" || true
+          git commit -m "Save mlruns from gitAction" || true
           git push origin main

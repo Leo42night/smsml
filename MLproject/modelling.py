@@ -1,7 +1,10 @@
+# train Model & up to Github Repo & Docker
 import os
+
 import pandas as pd
 import numpy as np
 import mlflow
+from mlflow.models import infer_signature
 import mlflow.tensorflow
 from tensorflow import keras
 from tensorflow.keras import layers
@@ -13,7 +16,7 @@ from scikeras.wrappers import KerasRegressor
 base_dir = os.path.dirname(os.path.abspath(__file__))
 
 # Gabungkan path relatif file CSV
-file_path = os.path.join(base_dir, "./../preprocessing/nilai_mahasiswa-preprocessed.csv")
+file_path = os.path.join(base_dir, "nilai_mahasiswa-preprocessed.csv")
 print(f"✅ File CSV: {file_path}")
 # Load dataset
 df = pd.read_csv(file_path)
@@ -24,6 +27,7 @@ y = df["rating"].values
 X_train, X_test, y_train, y_test = train_test_split(
     X, y, test_size=0.2, random_state=42
 )
+
 
 # --- Model builder
 def build_ncf_model(n_users, n_items, embed_dim=16, hidden=[32, 16, 8]):
@@ -53,22 +57,11 @@ model = KerasRegressor(
     model=lambda: build_ncf_model(n_users, n_items), epochs=10, batch_size=32, verbose=1
 )
 
-# ======================================================
-# 🧠 MLflow Tracking
-# ======================================================
-
-# Set URI lokal (atau bisa diganti ke server remote)
-# mlflow.set_tracking_uri("file://" + os.path.join(base_dir, "mlruns"))
-mlflow.set_tracking_uri("http://127.0.0.1:5000/")
-
-# Set nama eksperimen
-mlflow.set_experiment("NCF_Rekomendasi_Mahasiswa")
-
+# mlflow.set_tracking_uri(os.path.join(base_dir, "mlruns"))
 
 with mlflow.start_run() as run:
+
     print(f"🎯 MLflow Run ID: {run.info.run_id}")
-    # Aktifkan autolog untuk TensorFlow
-    mlflow.tensorflow.autolog()
 
     # --- Train model
     model.fit(X_train, y_train)
@@ -77,15 +70,19 @@ with mlflow.start_run() as run:
     y_pred = model.predict(X_test)
     rmse = np.sqrt(mean_squared_error(y_test, y_pred))
     print(f"✅ RMSE: {rmse:.4f}")
-
-    # --- Log metrik manual juga (opsional)
-    mlflow.log_metric("rmse", rmse)
+    
+    # infer signature dari input dan output model
+    y_pred_sample = model.model_.predict(X_train[:5])
+    signature = infer_signature(X_train[:5], y_pred_sample)
 
     # --- Simpan model
-    mlflow.tensorflow.log_model(
+    mlflow.keras.log_model( # papaki tensorflow tidak menyimpan conda.yaml
         model.model_,  # scikeras wrapper punya atribut .model_
         name="model",
-        registered_model_name="NCF_Rekomendasi_Mahasiswa",
+        signature=signature
     )
+    
+    # --- Log metrik manual juga (opsional)
+    mlflow.log_metric("rmse", rmse)
 
 print("🚀 Training & Logging selesai.")

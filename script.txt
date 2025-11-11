@@ -7,6 +7,12 @@ conda activate ncf-env
 
 # Install Dependensi
 pip install numpy pandas scikit-learn tensorflow scikeras mlflow
+
+# buat Conda.yaml
+conda env export --from-history > conda.yaml
+# buat requirements.txt
+pip freeze > requirements.txt
+
 ---
 
 --- For Daily Use ---
@@ -15,9 +21,14 @@ cd C:\Users\ADVAN\Documents\Dicoding\msml\SMSML_LeoPrangsT && conda activate ncf
 conda activate ncf-env && mlflow server --host 127.0.0.1 --port 5000
 conda activate ncf-env && python Membangun_model\modelling.py
 conda activate ncf-env && python Membangun_model\modelling_tuning.py
+conda activate ncf-env && mlflow run MLProject --env-manager=local
 
 # preprocessing
 python preprocessing\automate_LeoPrangsT.py
+
+# MLproject (Github Action Docker Hub)
+python MLProject\modelling.py
+mlflow run MLProject --env-manager=local
 
 # run server
 conda activate ncf-env && mlflow server --host 127.0.0.1 --port 5000
