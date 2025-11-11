@@ -46,8 +46,7 @@ jobs:
         run : |
           git config --global user.name ${{ secrets.USERNAME }}
           git config --global user.email ${{ secrets.EMAIL }}
-          git mv preprocessing/nilai_mahasiswa-preprocessed.csv preprocessing/nilai_mahasiswa-preprocessed-gitAction.csv
-          git add preprocessing/nilai_mahasiswa-preprocessed-gitAction.csv
+          git add preprocessing/nilai_mahasiswa-preprocessed.csv
           git commit -m "preprocessing data gitAction" || true
           git push origin main
 
@@ -55,23 +54,23 @@ jobs:
       #   run: |
       #     echo $CSV_URL
 
-      # # A1: Save in Local Github
-      # # Install mlflow
-      # - name: Install dependencies mlflow
-      #   run: |
-      #     python -m pip install --upgrade pip
-      #     pip install mlflow
+      # Save model in Local Github
+      # Install mlflow
+      - name: Install dependencies mlflow
+        run: |
+          python -m pip install --upgrade pip
+          pip install mlflow
       
-      # # Run as a mlflow project
-      # - name: Run mlflow project
-      #   run: |
-      #     mlflow run MLproject --env-manager=local 
+      # Run as a mlflow project
+      - name: Run mlflow project
+        run: |
+          mlflow run MLproject --env-manager=local 
 
-      # # Save models to GitHub Repository
-      # - name: Save mlruns to repo
-      #   run: |
-      #     git config --global user.name ${{ secrets.USERNAME }}
-      #     git config --global user.email ${{ secrets.EMAIL }}
-      #     git add -f mlruns/
-      #     git commit -m "Save mlruns from CI run" || true
-      #     git push origin main
+      # Save models to GitHub Repository
+      - name: Save mlruns to repo
+        run: |
+          git config --global user.name ${{ secrets.USERNAME }}
+          git config --global user.email ${{ secrets.EMAIL }}
+          git add -f mlruns/
+          git commit -m "Save mlruns from CI run" || true
+          git push origin main
