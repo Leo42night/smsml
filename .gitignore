@@ -1,0 +1,5 @@
+mlruns/
+mlartifacts/ 
+
+preprocessing/nilai_mahasiswa-preprocessed-py.csv
+preprocessing/nilai_mahasiswa-preprocessed-ipynb.csv

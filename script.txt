@@ -1,0 +1,37 @@
+---  Initial For Development ---
+# Buat environment baru dengan Python 3.12 (misalnya)
+conda create -n ncf-env python=3.12
+
+# Aktifkan environment
+conda activate ncf-env
+
+# Install Dependensi
+pip install numpy pandas scikit-learn tensorflow scikeras mlflow
+---
+
+--- For Daily Use ---
+# Fast Command
+cd C:\Users\ADVAN\Documents\Dicoding\msml\SMSML_LeoPrangsT && conda activate ncf-env && mlflow server --host 127.0.0.1 --port 5000
+conda activate ncf-env && mlflow server --host 127.0.0.1 --port 5000
+conda activate ncf-env && python Membangun_model\modelling.py
+conda activate ncf-env && python Membangun_model\modelling_tuning.py
+
+# preprocessing
+python preprocessing\automate_LeoPrangsT.py
+
+# run server
+conda activate ncf-env && mlflow server --host 127.0.0.1 --port 5000
+mlflow server --host 127.0.0.1 --port 5000
+
+# test modelling (using mlflow)
+python Membangun_model\modelling.py
+python Membangun_model\modelling_tuning.py
+conda activate ncf-env && python Membangun_model\model_tun.py
+
+# lihat UI mlflow
+mlflow ui
+
+
+--- For New User/Computer ---
+# gunakan kembali (test pipeline)
+conda create -n ncf-env --file requirements.txt
