@@ -4,7 +4,8 @@ import pandas as pd
 
 app = Flask(__name__)
 
-MODEL_URI = "runs:/<RUN_ID>/model"  # ganti RUN_ID
+# MODEL_URI = "runs:/<RUN_ID>/model"  # ganti RUN_ID
+MODEL_URI = "runs:/dc9d4cde68cf4578824f5df2f8713966/model"  # ganti RUN_ID
 model = mlflow.pyfunc.load_model(MODEL_URI)
 
 @app.route("/predict", methods=["POST"])
@@ -14,5 +15,8 @@ def predict():
     preds = model.predict(df).tolist()
     return jsonify({"predictions": preds})
 
+@app.route("/", methods=["GET"])
+def index():
+    return "Server Inference Model berjalan!"
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=5000)

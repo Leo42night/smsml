@@ -20,11 +20,12 @@ pip freeze > requirements.txt
 cd C:\Users\ADVAN\Documents\Dicoding\msml\SMSML_LeoPrangsT && conda activate ncf-env && mlflow server --host 127.0.0.1 --port 5000
 conda activate ncf-env && mlflow server --host 127.0.0.1 --port 5000
 conda activate ncf-env && python Membangun_model\modelling.py
+conda activate ncf-env && python Membangun_model\modelling-ncf.py
 conda activate ncf-env && python Membangun_model\modelling_tuning.py
 conda activate ncf-env && mlflow run MLProject --env-manager=local
-python Membangun_model\model_tun.py(2025-11-12 05:17:00 - )
-# preprocessing
 conda activate ncf-env && python MLProject\modelling.py
+conda activate ncf-env && docker run -p 5000:8000 leo42night/cf_rekomendasi:latest
+
 
 # MLproject (Github Action Docker Hub)
 python MLProject\modelling.py
@@ -36,16 +37,24 @@ mlflow server --host 127.0.0.1 --port 5000
 
 # test modelling (using mlflow)
 python Membangun_model\modelling.py
+python Membangun_model\modelling-ncf.py
 python Membangun_model\modelling_tuning.py
 conda activate ncf-env && python Membangun_model\model_tun.py
 
+python "Monitoring dan Logging\7.inference.py"
 
-# test mlflow model service
-mlflow models serve -m mlruns/0/models/m-fcdb6c123cb747aca341bfe1977334fc -p 1234 --no-conda
+mlflow models serve -m "models:/NCF_ManualLogging/1" -p 8080 --no-conda
 
-# lihat UI mlflow
-mlflow ui
+mlflow models build-docker \
+    -m mlruns/0/<RUN_ID>/artifacts/model \
+    -n leo42night/ncf_rekomendasi:latest
 
+mlflow models build-docker \
+    -m models:/CF_Mahasiswa_Sklearn/1 \
+    -n leo42night/cf_rekomendasi:latest
+
+mlflow models build-docker -m models:/CF_Mahasiswa_Sklearn/2 -n leo42night/cf_rekomendasi:latest
+mlflow models build-docker -m models:/NCF_ManualLogging/3 -n leo42night/ncf_rekomendasi:latest
 
 --- For New User/Computer ---
 # gunakan kembali (test pipeline)
