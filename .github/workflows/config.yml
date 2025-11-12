@@ -85,4 +85,4 @@ jobs:
       # Save models to Docker Hub
       - name: Save mlruns to Docker Hub (kriteria 3)
         run: |
-          docker push <dockerhub_username>/cf_rekomendasi:latest
+          docker push leoprangs/cf_rekomendasi:latest
