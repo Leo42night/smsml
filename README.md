@@ -40,9 +40,10 @@ python Membangun_model\modelling_tuning.py
 ```
 
 ### Kriteria 3: CI/CD
-`MLProject\modelling.py` run di GithubAction (local windows bermasalah [Lihat **Log 1**]). 
-- Github action akan menjalankan simpan model di repo Github dan Docker Hub. 
-- Anda pelu login ke docker hub dan install docker (bagian ini anda perlu setup sendiri, saya menggunakan Docker Desktop for Windows).
+- Uji modelling di local `MLProject\modelling.py`:
+```bash
+mlflow run MLProject --env-manager=local
+```
 - Uji docker di local:
 ```bash
 # build image
@@ -108,13 +109,4 @@ curl -X POST http://127.0.0.1:8080/invocations \
     }'
 # contoh hasil
 {"predictions": [{"0": 0.89720219373703}]}(base)
-```
-
-## Log
-
-1. `MLProject\modelling.py` belum bisa run di local windows (`conda activate ncf-env && mlflow run MLProject --env-manager=local`) karena track_uri tidak bisa detect path ini, tapi aman di github action yang pakai ubuntu.
-```bash
-mlflow.exceptions.MlflowException: When an mlflow-artifacts URI was supplied, the tracking URI must be a valid http or https URI, but it was currently set to file:///C:/Users/.../SMSML_LeoPrangsT/mlruns. Perhaps you forgot to set the tracking URI to the running MLflow server. To set the tracking URI, use either of the following methods:
-1. Set the MLFLOW_TRACKING_URI environment variable to the desired tracking URI. `export MLFLOW_TRACKING_URI=http://localhost:5000`
-2. Set the tracking URI programmatically by calling `mlflow.set_tracking_uri`. `mlflow.set_tracking_uri('http://localhost:5000')
 ```

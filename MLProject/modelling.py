@@ -29,7 +29,7 @@ X_train, X_test, y_train, y_test = train_test_split(
 # ======================================================
 # 🧠 MLflow Tracking
 # ======================================================
-mlflow.set_experiment("CF_Mahasiswa_Sklearn")
+# mlflow.set_experiment("CF_Mahasiswa_Sklearn")
 
 with mlflow.start_run(run_name="ML_CF_RandomForest") as run:
     print(f"🎯 MLflow Run ID: {run.info.run_id}")
