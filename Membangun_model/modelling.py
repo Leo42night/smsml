@@ -56,7 +56,12 @@ with mlflow.start_run(run_name="ML_CF_RandomForest") as run:
 
     # --- (Opsional) Log metrik tambahan
     mlflow.log_metric("rmse_manual", rmse)
-
-    # Model otomatis terekam via autolog
+    
+    # ⬇️ Tambahkan baris ini untuk memastikan model tersimpan sebagai artifact:
+    mlflow.sklearn.log_model(
+        sk_model=model,
+        artifact_path="model",
+        registered_model_name="CF_Mahasiswa_Sklearn"
+    )
 
 print("🚀 Training & Logging selesai.")

@@ -1,84 +1,64 @@
-    # train Model & up to Github Repo & Docker
-    import os
+# menggunakan Random Forest (Collaborative Filtering biasa, bukan NCF)
+# set Github Action & Docker Hub
+import os
+import pandas as pd
+import numpy as np
+import mlflow
+import mlflow.sklearn
+from sklearn.model_selection import train_test_split
+from sklearn.metrics import mean_squared_error
+from sklearn.ensemble import RandomForestRegressor
 
-    import pandas as pd
-    import numpy as np
-    import mlflow
-    from mlflow.models import infer_signature
-    import mlflow.tensorflow
-    from tensorflow import keras
-    from tensorflow.keras import layers
-    from sklearn.model_selection import train_test_split
-    from sklearn.metrics import mean_squared_error
-    from scikeras.wrappers import KerasRegressor
+# Dapatkan direktori kerja saat ini (untuk Jupyter Notebook)
+base_dir = os.path.dirname(os.path.abspath(__file__))
 
-    # Dapatkan direktori kerja saat ini (untuk Jupyter Notebook)
-    base_dir = os.path.dirname(os.path.abspath(__file__))
+# Gabungkan path relatif file CSV
+file_path = os.path.join(base_dir, "nilai_mahasiswa-preprocessed.csv")
+print(f"✅ File CSV: {file_path}")
 
-    # Gabungkan path relatif file CSV
-    file_path = os.path.join(base_dir, "nilai_mahasiswa-preprocessed.csv")
-    print(f"✅ File CSV: {file_path}")
-    # Load dataset
-    df = pd.read_csv(file_path)
+# --- Load dataset
+df = pd.read_csv(file_path)
 
-    # --- Split data
-    X = df[["user", "item"]].values
-    y = df["rating"].values
-    X_train, X_test, y_train, y_test = train_test_split(
-        X, y, test_size=0.2, random_state=42
+# --- Split data
+X = df[["user", "item"]].values
+y = df["rating"].values
+X_train, X_test, y_train, y_test = train_test_split(
+    X, y, test_size=0.2, random_state=42
+)
+
+# ======================================================
+# 🧠 MLflow Tracking
+# ======================================================
+mlflow.set_experiment("CF_Mahasiswa_Sklearn")
+
+with mlflow.start_run(run_name="ML_CF_RandomForest") as run:
+    print(f"🎯 MLflow Run ID: {run.info.run_id}")
+
+    # Aktifkan autolog untuk sklearn
+    mlflow.sklearn.autolog()
+
+    # --- Model Machine Learning Collaborative Filtering
+    model = RandomForestRegressor(
+        n_estimators=100,
+        max_depth=10,
+        random_state=42,
+        n_jobs=-1
     )
 
-    # --- Model builder
-    def build_ncf_model(n_users, n_items, embed_dim=16, hidden=[32, 16, 8]):
-        inputs = keras.Input(shape=(2,), name="user_item_input")
-        user_input = layers.Lambda(lambda x: x[:, 0])(inputs)
-        item_input = layers.Lambda(lambda x: x[:, 1])(inputs)
-        user_input = layers.Reshape((1,))(user_input)
-        item_input = layers.Reshape((1,))(item_input)
-        user_emb = layers.Embedding(n_users, embed_dim)(user_input)
-        item_emb = layers.Embedding(n_items, embed_dim)(item_input)
-        user_vec = layers.Flatten()(user_emb)
-        item_vec = layers.Flatten()(item_emb)
-        x = layers.Concatenate()([user_vec, item_vec])
-        for h in hidden:
-            x = layers.Dense(h, activation="relu")(x)
-        output = layers.Dense(1, activation="sigmoid")(x)
-        model = keras.Model(inputs=inputs, outputs=output)
-        model.compile(optimizer="adam", loss="mse")
-        return model
+    # --- Train model
+    model.fit(X_train, y_train)
 
+    # --- Predict dan evaluate
+    y_pred = model.predict(X_test)
+    rmse = np.sqrt(mean_squared_error(y_test, y_pred))
+    print(f"✅ RMSE: {rmse:.4f}")
+    
+    # log model secara eksplicit
+    mlflow.sklearn.log_model(model, "model", registered_model_name="CF_Mahasiswa_Sklearn")
 
-    # --- Setup model
-    n_users = df["user"].nunique()
-    n_items = df["item"].nunique()
+    # --- (Opsional) Log metrik tambahan
+    mlflow.log_metric("rmse_manual", rmse)
 
-    model = KerasRegressor(
-        model=lambda: build_ncf_model(n_users, n_items), epochs=10, batch_size=32, verbose=1
-    )
-    with mlflow.start_run(run_name="mlproject_modelling") as run:
+    # Model otomatis terekam via autolog
 
-        print(f"🎯 MLflow Run ID: {run.info.run_id}")
-
-        # --- Train model
-        model.fit(X_train, y_train)
-
-        # --- Predict dan evaluate
-        y_pred = model.predict(X_test)
-        rmse = np.sqrt(mean_squared_error(y_test, y_pred))
-        print(f"✅ RMSE: {rmse:.4f}")
-        
-        # infer signature dari input dan output model
-        y_pred_sample = model.model_.predict(X_train[:5])
-        signature = infer_signature(X_train[:5], y_pred_sample)
-
-        # --- Simpan model
-        mlflow.keras.log_model( # papaki tensorflow tidak menyimpan conda.yaml
-            model.model_,  # scikeras wrapper punya atribut .model_
-            name="model",
-            signature=signature
-        )
-        
-        # --- Log metrik manual juga (opsional)
-        mlflow.log_metric("rmse", rmse)
-
-    print("🚀 Training & Logging selesai.")
+print("🚀 Training & Logging selesai.")

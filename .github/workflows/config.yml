@@ -69,3 +69,20 @@ jobs:
           git add -f mlruns/
           git commit -m "Save mlruns from gitAction #3" || true
           git push origin main
+      
+      - name: Build Docker image
+        run: |
+          mlflow models build-docker \
+            -m models:/CF_Mahasiswa_Sklearn/1 \
+            -n leoprangs/cf_rekomendasi:latest
+
+      - name: Login Docker Hub
+        uses: docker/login-action@v2
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+
+      # Save models to Docker Hub
+      - name: Save mlruns to Docker Hub (kriteria 3)
+        run: |
+          docker push <dockerhub_username>/cf_rekomendasi:latest

@@ -1,3 +1,5 @@
+# DeepLearning HyperTuning, Manual Logging (model than autolog)
+# Up Ke Dagshub
 # 2025-11-12 05:25:50 sampai 2025/11/12 05:27:32 (2 menit)
 import os
 from dotenv import load_dotenv
@@ -30,13 +32,21 @@ X_train, X_test, y_train, y_test = train_test_split(
     X, y, test_size=0.2, random_state=42
 )
 
+class SliceLayer(layers.Layer):
+    def __init__(self, index, **kwargs):
+        super().__init__(**kwargs)
+        self.index = index
+
+    def call(self, x):
+        return x[:, self.index]
+
 
 # === MODEL BUILDER ===
 def build_ncf_model(n_users, n_items, embed_dim=16, hidden=[32, 16, 8], lr=0.001):
     inputs = keras.Input(shape=(2,), name="user_item_input")
 
-    user_input = layers.Lambda(lambda x: x[:, 0])(inputs)
-    item_input = layers.Lambda(lambda x: x[:, 1])(inputs)
+    user_input = SliceLayer(0)(inputs)
+    item_input = SliceLayer(1)(inputs)
     user_input = layers.Reshape((1,))(user_input)
     item_input = layers.Reshape((1,))(item_input)
 
@@ -82,7 +92,7 @@ param_grid = {
 # === MLflow SETUP ===
 # Set konfigurasi MLflow ke DagsHub
 mlflow.set_tracking_uri(os.getenv("MLFLOW_TRACKING_URI"))
-mlflow.set_experiment("NCF_Rekomendasi_Mahasiswa")
+mlflow.set_experiment("NCF_ManualLogging")
 
 with mlflow.start_run(run_name="GridSearch_ManualLogging"):
 
@@ -158,16 +168,20 @@ with mlflow.start_run(run_name="GridSearch_ManualLogging"):
     mlflow.log_metric("test_mae", test_mae)
     mlflow.log_metric("test_mse", test_mse)
 
-    # === SIMPAN MODEL KE MLflow ===
+    # === SIMPAN MODEL KE MLflow === bermasalah dengan dagshub
     # mlflow.keras.log_model(
     #     best_model.model_,
     #     artifact_path="model",
     #     # registered_model_name="NCF_Rekomendasi_Mahasiswa"
     # )
+    mlflow.tensorflow.log_model(
+        best_model.model_,  # scikeras wrapper punya atribut .model_
+        name="model",
+        registered_model_name="NCF_ManualLogging",
+    )
     # == LOG Manual Model ==
-    best_model.model_.save("ncf_model_best.h5")
-    mlflow.log_artifact("ncf_model_best.h5", artifact_path="model")
-
+    # best_model.model_.save("ncf_model_best.h5")
+    # mlflow.log_artifact("ncf_model_best.h5", artifact_path="model")
 
     # === OUTPUT KE TERMINAL ===
     print("\n🏆 Best Params:", best_params)

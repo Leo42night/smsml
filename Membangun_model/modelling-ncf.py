@@ -1,4 +1,5 @@
 # Deep Learning CF
+# model dasar NCF untuk modelling_tuning.py
 # hanya pakai autolog
 import os
 import pandas as pd
@@ -10,6 +11,8 @@ from tensorflow.keras import layers
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import mean_squared_error
 from scikeras.wrappers import KerasRegressor
+
+from tensorflow.keras.saving import register_keras_serializable
 
 # Dapatkan direktori kerja saat ini (untuk Jupyter Notebook)
 base_dir = os.path.dirname(os.path.abspath(__file__))
@@ -27,12 +30,25 @@ X_train, X_test, y_train, y_test = train_test_split(
     X, y, test_size=0.2, random_state=42
 )
 
+@register_keras_serializable()
+class SliceLayer(layers.Layer):
+    def __init__(self, index, **kwargs):
+        super().__init__(**kwargs)
+        self.index = index
+
+    def call(self, x):
+        return x[:, self.index]
+
+    def get_config(self):
+        config = super().get_config()
+        config.update({"index": self.index})
+        return config
 
 # --- Model builder
 def build_ncf_model(n_users, n_items, embed_dim=16, hidden=[32, 16, 8]):
     inputs = keras.Input(shape=(2,), name="user_item_input")
-    user_input = layers.Lambda(lambda x: x[:, 0])(inputs)
-    item_input = layers.Lambda(lambda x: x[:, 1])(inputs)
+    user_input = SliceLayer(0)(inputs)
+    item_input = SliceLayer(1)(inputs)
     user_input = layers.Reshape((1,))(user_input)
     item_input = layers.Reshape((1,))(item_input)
     user_emb = layers.Embedding(n_users, embed_dim)(user_input)
@@ -65,8 +81,7 @@ model = KerasRegressor(
 mlflow.set_tracking_uri("http://127.0.0.1:5000/")
 
 # Set nama eksperimen
-mlflow.set_experiment("NCF_Modelling")
-
+mlflow.set_experiment("NCF_ManualLogging")
 
 with mlflow.start_run(run_name="build_modelling") as run:
     print(f"🎯 MLflow Run ID: {run.info.run_id}")
@@ -83,12 +98,15 @@ with mlflow.start_run(run_name="build_modelling") as run:
 
     # --- Log metrik manual juga (opsional)
     mlflow.log_metric("rmse", rmse)
+    
+    # izinkan unsafe deserialization ketika nanti model di load.
+    keras.config.enable_unsafe_deserialization()
 
     # --- Simpan model
     mlflow.tensorflow.log_model(
         model.model_,  # scikeras wrapper punya atribut .model_
         name="model",
-        registered_model_name="NCF_Rekomendasi_Mahasiswa",
+        registered_model_name="NCF_ManualLogging",
     )
 
 print("🚀 Training & Logging selesai.")
