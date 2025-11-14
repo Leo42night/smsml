@@ -1,6 +1,5 @@
 mlruns/
 mlartifacts/ 
-
+mlflow.db
 .env
-preprocessing/nilai_mahasiswa-preprocessed-py.csv
-preprocessing/nilai_mahasiswa-preprocessed-ipynb.csv
+ncf_model_best.h5

@@ -2,6 +2,7 @@
 # Up Ke Dagshub
 # 2025-11-12 05:25:50 sampai 2025/11/12 05:27:32 (2 menit)
 import os
+import sys
 from dotenv import load_dotenv
 import numpy as np
 import pandas as pd
@@ -13,7 +14,28 @@ from sklearn.model_selection import train_test_split, GridSearchCV
 from sklearn.metrics import mean_squared_error
 from scikeras.wrappers import KerasRegressor
 
-load_dotenv() # untuk seting token Dagshub (auto handle username & password)
+load_dotenv() # untuk seting token Dagshub (.env) (auto handle username & password)
+print("Current tracking URI:", mlflow.get_tracking_uri())
+
+# Ambil dari environment variable
+username = os.getenv("MLFLOW_TRACKING_USERNAME")
+password = os.getenv("MLFLOW_TRACKING_PASSWORD")
+
+# Tampilkan
+print(f"✅ DagsHub Username: {username}")
+print(f"✅ DagsHub Password/Token: {password}")
+
+try:
+    exp = mlflow.get_experiment_by_name("NCF_ManualLogging")
+    if exp is None:
+        exp_id = mlflow.create_experiment("NCF_ManualLogging")
+        print("✅ Created experiment with ID:", exp_id)
+    else:
+        print("✅ Found existing experiment:", exp.name)
+    print("🟢 Connection and credentials OK — write access confirmed.")
+except Exception as e:
+    print("❌ Connection or credentials failed:", e)
+    sys.exit()  # langsung keluar
 
 # === PATH FILE DATA ===
 try:
@@ -90,8 +112,8 @@ param_grid = {
 }
 
 # === MLflow SETUP ===
-# Set konfigurasi MLflow ke DagsHub
-mlflow.set_tracking_uri(os.getenv("MLFLOW_TRACKING_URI"))
+# mlflow.set_tracking_uri("http://127.0.0.1:5000/") # Registry & tracking = di lokal (aktif penuh)
+
 mlflow.set_experiment("NCF_ManualLogging")
 
 with mlflow.start_run(run_name="GridSearch_ManualLogging"):
@@ -169,19 +191,14 @@ with mlflow.start_run(run_name="GridSearch_ManualLogging"):
     mlflow.log_metric("test_mse", test_mse)
 
     # === SIMPAN MODEL KE MLflow === bermasalah dengan dagshub
-    # mlflow.keras.log_model(
-    #     best_model.model_,
-    #     artifact_path="model",
-    #     # registered_model_name="NCF_Rekomendasi_Mahasiswa"
+    # mlflow.tensorflow.log_model(
+    #     best_model.model_,  # scikeras wrapper punya atribut .model_
+    #     name="model",
+    #     registered_model_name="NCF_ManualLogging",
     # )
-    mlflow.tensorflow.log_model(
-        best_model.model_,  # scikeras wrapper punya atribut .model_
-        name="model",
-        registered_model_name="NCF_ManualLogging",
-    )
     # == LOG Manual Model ==
-    # best_model.model_.save("ncf_model_best.h5")
-    # mlflow.log_artifact("ncf_model_best.h5", artifact_path="model")
+    best_model.model_.save("ncf_model_best.h5")
+    mlflow.log_artifact("ncf_model_best.h5", artifact_path="model")
 
     # === OUTPUT KE TERMINAL ===
     print("\n🏆 Best Params:", best_params)

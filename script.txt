@@ -23,8 +23,8 @@ conda activate ncf-env && python Membangun_model\modelling.py
 conda activate ncf-env && python Membangun_model\modelling-ncf.py
 conda activate ncf-env && python Membangun_model\modelling_tuning.py
 conda activate ncf-env && mlflow run MLProject --env-manager=local
-conda activate ncf-env && python MLProject\modelling.py
 conda activate ncf-env && docker run -p 5000:8000 leo42night/cf_rekomendasi:latest
+conda activate ncf-env && python "Monitoring dan Logging\7.inference.py"
 
 
 # MLproject (Github Action Docker Hub)
@@ -55,6 +55,8 @@ mlflow models build-docker \
 
 mlflow models build-docker -m models:/CF_Mahasiswa_Sklearn/2 -n leo42night/cf_rekomendasi:latest
 mlflow models build-docker -m models:/NCF_ManualLogging/3 -n leo42night/ncf_rekomendasi:latest
+
+C:\prometheus\prometheus-3.5.0.windows-amd64\prometheus.exe --config.file="Monitoring dan Logging\2.prometheus.yml"
 
 --- For New User/Computer ---
 # gunakan kembali (test pipeline)

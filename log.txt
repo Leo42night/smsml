@@ -1,98 +1,56 @@
-C:\Users\ADVAN\Documents\Dicoding\msml\SMSML_LeoPrangsT>conda activate ncf-env && mlflow models serve -m runs:/dc9d4cde68cf4578824f5df2f8713966/model -p 1234 --no-conda
+(ncf-env) C:\Users\ADVAN\Documents\Dicoding\msml\SMSML_LeoPrangsT>mlflow run MLProject --env-manager=local
 C:\Users\ADVAN\.conda\envs\ncf-env\Lib\site-packages\mlflow\tracking\_tracking_service\utils.py:140: FutureWarning: Filesystem tracking backend (e.g., './mlruns') is deprecated. Please switch to a database backend (e.g., 'sqlite:///mlflow.db'). For feedback, see: https://github.com/mlflow/mlflow/issues/18534
   return FileStore(store_uri, store_uri)
-Downloading artifacts:   0%|                                                                     | 0/1 [00:00<?, ?it/s]
-Downloading artifacts: 100%|████████████████████████████████████████████████████████████| 5/5 [00:00<00:00, 455.30it/s]
-2025/11/12 09:04:19 INFO mlflow.models.flavor_backend_registry: Selected backend for flavor 'python_function'
-Downloading artifacts:   0%|                                                                     | 0/1 [00:00<?, ?it/s]
-Downloading artifacts: 100%|████████████████████████████████████████████████████████████| 5/5 [00:00<00:00, 833.73it/s]
-2025/11/12 09:04:19 INFO mlflow.pyfunc.backend: === Running command 'uvicorn --host 127.0.0.1 --port 1234 --workers 1 mlflow.pyfunc.scoring_server.app:app'
+2025/11/12 16:38:41 INFO mlflow.projects.utils: === Created directory C:\Users\ADVAN\AppData\Local\Temp\tmpxl_aug3q for downloading remote URIs passed to arguments of type 'path' ===
+2025/11/12 16:38:41 INFO mlflow.projects.backend.local: === Running command 'python modelling.py' in run with ID '58757e5e5ad145049ca370c36cc317ea' ===
+✅ File CSV: C:\Users\ADVAN\Documents\Dicoding\msml\SMSML_LeoPrangsT\MLProject\nilai_mahasiswa-preprocessed.csv
+C:\Users\ADVAN\.conda\envs\ncf-env\Lib\site-packages\mlflow\tracking\_tracking_service\utils.py:140: FutureWarning: Filesystem tracking backend (e.g., './mlruns') is deprecated. Please switch to a database backend (e.g., 'sqlite:///mlflow.db'). For feedback, see: https://github.com/mlflow/mlflow/issues/18534
+  return FileStore(store_uri, store_uri)
+🎯 MLflow Run ID: 58757e5e5ad145049ca370c36cc317ea
+2025/11/12 16:38:56 WARNING mlflow.utils.autologging_utils: Encountered unexpected error during sklearn autologging: When an mlflow-artifacts URI was supplied, the tracking URI must be a valid http or https URI, but it was currently set to file:///C:/Users/ADVAN/Documents/Dicoding/msml/SMSML_LeoPrangsT/mlruns. Perhaps you forgot to set the tracking URI to the running MLflow server. To set the tracking URI, use either of the following methods:
+1. Set the MLFLOW_TRACKING_URI environment variable to the desired tracking URI. `export MLFLOW_TRACKING_URI=http://localhost:5000`
+2. Set the tracking URI programmatically by calling `mlflow.set_tracking_uri`. `mlflow.set_tracking_uri('http://localhost:5000')`
+✅ RMSE: 0.2114
+2025/11/12 16:38:56 WARNING mlflow.models.model: `artifact_path` is deprecated. Please use `name` instead.
+2025/11/12 16:39:01 WARNING mlflow.models.model: Model logged without a signature and input example. Please set `input_example` parameter when logging the model to auto infer the model signature.
 Traceback (most recent call last):
-  File "<frozen runpy>", line 198, in _run_module_as_main
-  File "<frozen runpy>", line 88, in _run_code
-  File "C:\Users\ADVAN\AppData\Roaming\Python\Python312\Scripts\uvicorn.exe\__main__.py", line 7, in <module>
-  File "C:\Users\ADVAN\AppData\Roaming\Python\Python312\site-packages\click\core.py", line 1161, in __call__
-    return self.main(*args, **kwargs)
-           ^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "C:\Users\ADVAN\AppData\Roaming\Python\Python312\site-packages\click\core.py", line 1082, in main
-    rv = self.invoke(ctx)
-         ^^^^^^^^^^^^^^^^
-  File "C:\Users\ADVAN\AppData\Roaming\Python\Python312\site-packages\click\core.py", line 1443, in invoke
-    return ctx.invoke(self.callback, **ctx.params)
-           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "C:\Users\ADVAN\AppData\Roaming\Python\Python312\site-packages\click\core.py", line 788, in invoke
-    return __callback(*args, **kwargs)
-           ^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "C:\Users\ADVAN\AppData\Roaming\Python\Python312\site-packages\uvicorn\main.py", line 416, in main
-    run(
-  File "C:\Users\ADVAN\AppData\Roaming\Python\Python312\site-packages\uvicorn\main.py", line 587, in run
-    server.run()
-  File "C:\Users\ADVAN\AppData\Roaming\Python\Python312\site-packages\uvicorn\server.py", line 61, in run
-    return asyncio.run(self.serve(sockets=sockets))
-           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "C:\Python312\Lib\asyncio\runners.py", line 194, in run
-    return runner.run(main)
-           ^^^^^^^^^^^^^^^^
-  File "C:\Python312\Lib\asyncio\runners.py", line 118, in run
-    return self._loop.run_until_complete(task)
-           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "C:\Python312\Lib\asyncio\base_events.py", line 687, in run_until_complete
-    return future.result()
-           ^^^^^^^^^^^^^^^
-  File "C:\Users\ADVAN\AppData\Roaming\Python\Python312\site-packages\uvicorn\server.py", line 68, in serve
-    config.load()
-  File "C:\Users\ADVAN\AppData\Roaming\Python\Python312\site-packages\uvicorn\config.py", line 467, in load
-    self.loaded_app = import_from_string(self.app)
-                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "C:\Users\ADVAN\AppData\Roaming\Python\Python312\site-packages\uvicorn\importer.py", line 24, in import_from_string
-    raise exc from None
-  File "C:\Users\ADVAN\AppData\Roaming\Python\Python312\site-packages\uvicorn\importer.py", line 21, in import_from_string
-    module = importlib.import_module(module_str)
-             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "C:\Python312\Lib\importlib\__init__.py", line 90, in import_module
-    return _bootstrap._gcd_import(name[level:], package, level)
-           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "<frozen importlib._bootstrap>", line 1387, in _gcd_import
-  File "<frozen importlib._bootstrap>", line 1360, in _find_and_load
-  File "<frozen importlib._bootstrap>", line 1310, in _find_and_load_unlocked
-  File "<frozen importlib._bootstrap>", line 488, in _call_with_frames_removed
-  File "<frozen importlib._bootstrap>", line 1387, in _gcd_import
-  File "<frozen importlib._bootstrap>", line 1360, in _find_and_load
-  File "<frozen importlib._bootstrap>", line 1310, in _find_and_load_unlocked
-  File "<frozen importlib._bootstrap>", line 488, in _call_with_frames_removed
-  File "<frozen importlib._bootstrap>", line 1387, in _gcd_import
-  File "<frozen importlib._bootstrap>", line 1360, in _find_and_load
-  File "<frozen importlib._bootstrap>", line 1310, in _find_and_load_unlocked
-  File "<frozen importlib._bootstrap>", line 488, in _call_with_frames_removed
-  File "<frozen importlib._bootstrap>", line 1387, in _gcd_import
-  File "<frozen importlib._bootstrap>", line 1360, in _find_and_load
-  File "<frozen importlib._bootstrap>", line 1324, in _find_and_load_unlocked
-ModuleNotFoundError: No module named 'mlflow'
-Traceback (most recent call last):
-  File "<frozen runpy>", line 198, in _run_module_as_main
-  File "<frozen runpy>", line 88, in _run_code
-  File "C:\Users\ADVAN\.conda\envs\ncf-env\Scripts\mlflow.exe\__main__.py", line 6, in <module>
-  File "C:\Users\ADVAN\AppData\Roaming\Python\Python312\site-packages\click\core.py", line 1161, in __call__
-    return self.main(*args, **kwargs)
-           ^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "C:\Users\ADVAN\AppData\Roaming\Python\Python312\site-packages\click\core.py", line 1082, in main
-    rv = self.invoke(ctx)
-         ^^^^^^^^^^^^^^^^
-  File "C:\Users\ADVAN\AppData\Roaming\Python\Python312\site-packages\click\core.py", line 1697, in invoke
-    return _process_result(sub_ctx.command.invoke(sub_ctx))
-                           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "C:\Users\ADVAN\AppData\Roaming\Python\Python312\site-packages\click\core.py", line 1697, in invoke
-    return _process_result(sub_ctx.command.invoke(sub_ctx))
-                           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "C:\Users\ADVAN\AppData\Roaming\Python\Python312\site-packages\click\core.py", line 1443, in invoke
-    return ctx.invoke(self.callback, **ctx.params)
-           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "C:\Users\ADVAN\AppData\Roaming\Python\Python312\site-packages\click\core.py", line 788, in invoke
-    return __callback(*args, **kwargs)
-           ^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "C:\Users\ADVAN\.conda\envs\ncf-env\Lib\site-packages\mlflow\models\cli.py", line 104, in serve
-    ).serve(
-      ^^^^^^
-  File "C:\Users\ADVAN\.conda\envs\ncf-env\Lib\site-packages\mlflow\pyfunc\backend.py", line 322, in serve
-    raise Exception(
-Exception: Command 'uvicorn --host 127.0.0.1 --port 1234 --workers 1 mlflow.pyfunc.scoring_server.app:app' returned non zero return code. Return code = 1
+  File "C:\Users\ADVAN\Documents\Dicoding\msml\SMSML_LeoPrangsT\MLProject\modelling.py", line 57, in <module>
+    mlflow.sklearn.log_model(model, "model", registered_model_name="CF_Mahasiswa_Sklearn")
+  File "C:\Users\ADVAN\.conda\envs\ncf-env\Lib\site-packages\mlflow\sklearn\__init__.py", line 426, in log_model
+    return Model.log(
+           ^^^^^^^^^^
+  File "C:\Users\ADVAN\.conda\envs\ncf-env\Lib\site-packages\mlflow\models\model.py", line 1297, in log
+    client.log_model_artifacts(model.model_id, local_path)
+  File "C:\Users\ADVAN\.conda\envs\ncf-env\Lib\site-packages\mlflow\tracking\client.py", line 5643, in log_model_artifacts
+    return self._tracking_client.log_model_artifacts(model_id, local_dir)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\ADVAN\.conda\envs\ncf-env\Lib\site-packages\mlflow\tracking\_tracking_service\client.py", line 911, in log_model_artifacts
+    self._get_artifact_repo(model_id, resource="logged_model").log_artifacts(local_dir)
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\ADVAN\.conda\envs\ncf-env\Lib\site-packages\mlflow\tracking\_tracking_service\client.py", line 650, in _get_artifact_repo
+    artifact_repo = get_artifact_repository(artifact_uri)
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\ADVAN\.conda\envs\ncf-env\Lib\site-packages\mlflow\store\artifact\artifact_repository_registry.py", line 147, in get_artifact_repository
+    return _artifact_repository_registry.get_artifact_repository(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\ADVAN\.conda\envs\ncf-env\Lib\site-packages\mlflow\store\artifact\artifact_repository_registry.py", line 83, in get_artifact_repository
+    return repository(artifact_uri, tracking_uri=tracking_uri, registry_uri=registry_uri)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\ADVAN\.conda\envs\ncf-env\Lib\site-packages\mlflow\store\artifact\mlflow_artifacts_repo.py", line 55, in __init__
+    self.resolve_uri(artifact_uri, effective_tracking_uri), tracking_uri, registry_uri
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\ADVAN\.conda\envs\ncf-env\Lib\site-packages\mlflow\store\artifact\mlflow_artifacts_repo.py", line 70, in resolve_uri
+    _validate_uri_scheme(track_parse)
+  File "C:\Users\ADVAN\.conda\envs\ncf-env\Lib\site-packages\mlflow\store\artifact\mlflow_artifacts_repo.py", line 35, in _validate_uri_scheme
+    raise MlflowException(
+mlflow.exceptions.MlflowException: When an mlflow-artifacts URI was supplied, the tracking URI must be a valid http or https URI, but it was currently set to file:///C:/Users/ADVAN/Documents/Dicoding/msml/SMSML_LeoPrangsT/mlruns. Perhaps you forgot to set the tracking URI to the running MLflow server. To set the tracking URI, use either of the following methods:
+1. Set the MLFLOW_TRACKING_URI environment variable to the desired tracking URI. `export MLFLOW_TRACKING_URI=http://localhost:5000`
+2. Set the tracking URI programmatically by calling `mlflow.set_tracking_uri`. `mlflow.set_tracking_uri('http://localhost:5000')`
+2025/11/12 16:39:02 ERROR mlflow.cli: === Run (ID '58757e5e5ad145049ca370c36cc317ea') failed ===
+
+
+--- DI GRAFANA ---
+
+- Konteks: Menambah rule kedua (rule pertama berhasil),  rule_uid: '' harusnya di generate otomatis, tapi ini tidak
+Error
+conflicting alert rule found [rule_uid: '', title: 'o', namespace_uid: 'cf432wed5bsw0f']: UNIQUE constraint failed: alert_rule.guid

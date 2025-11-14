@@ -26,12 +26,17 @@ X_train, X_test, y_train, y_test = train_test_split(
     X, y, test_size=0.2, random_state=42
 )
 
+# Unset the tracking URI
+# mlflow.set_tracking_uri("") 
+# or 
+# mlflow.set_tracking_uri(None) 
+
 # ======================================================
 # 🧠 MLflow Tracking
 # ======================================================
-# mlflow.set_experiment("CF_Mahasiswa_Sklearn")
+# mlflow.set_experiment("CF_Mahasiswa_Sklearn") # error:  Cannot start run with ID
 
-with mlflow.start_run(run_name="ML_CF_RandomForest") as run:
+with mlflow.start_run(run_name="CF_RandomForest_MLProject") as run:
     print(f"🎯 MLflow Run ID: {run.info.run_id}")
 
     # Aktifkan autolog untuk sklearn
