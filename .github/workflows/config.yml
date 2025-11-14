@@ -21,7 +21,7 @@ jobs:
         with:
           lfs: true   # <--- ini penting, otomatis ambil file LFS
 
-      - name: Install Git LFS manually
+      - name: Install Git LFS manually (Kriteria 3)
         run: |
           git lfs install
           git lfs pull
@@ -33,13 +33,13 @@ jobs:
           python-version: "3.12.12"
       
       # install dependencies (preprocessing)
-      - name: Install dependencies preprocessing
+      - name: Install dependencies preprocessing (Kriteria 1)
         run: |
           python -m pip install --upgrade pip
           pip install pandas scikit-learn
 
       # Jalankan Trigger
-      - name: Trigger preprocessing (rename afterward)
+      - name: Trigger preprocessing (Kriteria 1)
         run: |
           python preprocessing/automate_LeoPrangsT.py
       - name: Add and commit files
@@ -51,7 +51,7 @@ jobs:
           git push origin main
 
       # Save model in Local Github
-      - name: Install dependencies mlflow & rest
+      - name: Install dependencies mlflow & rest (Kriteria 3)
         run: |
           python -m pip install --upgrade pip
           pip install numpy tensorflow scikeras mlflow
@@ -70,7 +70,7 @@ jobs:
           git commit -m "Save mlruns from gitAction #3" || true
           git push origin main
       
-      - name: Build Docker image
+      - name: Build Docker image (Kriteria 3)
         run: |
           mlflow models build-docker \
             -m models:/CF_Mahasiswa_Sklearn/1 \
