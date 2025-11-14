@@ -4,6 +4,6 @@ profile: '{"features_shape": [5020, 2], "features_size": 10040, "features_nbytes
   80320}'
 schema: '{"mlflow_tensorspec": {"features": "[{\"type\": \"tensor\", \"tensor-spec\":
   {\"dtype\": \"int64\", \"shape\": [-1, 2]}}]", "targets": null}}'
-source: '{"tags": {"mlflow.user": "runner", "mlflow.source.name": "modelling.py",
-  "mlflow.source.type": "LOCAL", "mlflow.source.git.commit": "f9ff90204320474f7ab48c59ef0df0a338f039eb"}}'
+source: '{"tags": {"mlflow.user": "ADVAN", "mlflow.source.name": "modelling.py", "mlflow.source.type":
+  "LOCAL", "mlflow.source.git.commit": "0fcf5887cd7afc470f7cd425ee74ef1d9084f4c4"}}'
 source_type: code

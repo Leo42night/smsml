@@ -21,10 +21,16 @@ def make_request(payload):
 
 if __name__ == "__main__":
     start_http_server(8000)  # Prometheus scrape port
+    print("🚀 Prometheus exporter berjalan di http://localhost:8000/metrics")
+    print("📡 Mengirim request ke inference API setiap 10 detik...\n")
+    
     while True:
-        payload = [{"user": 1, "item": 1}]  # contoh input
+        payload = [{"user": 1, "item": 15},
+                   {"user": 20, "item": 50},
+                   {"user": 50, "item": 20}]  # contoh input
         try:
-            make_request(payload)
+            response = make_request(payload)
+            print(f"[{time.strftime('%H:%M:%S')}] ✅ Request sukses - Status: {response.status_code}")
         except Exception as e:
-            print("Inference gagal:", e)
+            print(f"[{time.strftime('%H:%M:%S')}] ❌ Inference gagal:", e)
         time.sleep(10)

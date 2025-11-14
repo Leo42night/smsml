@@ -78,7 +78,7 @@ model = KerasRegressor(
 
 # Set URI lokal (atau bisa diganti ke server remote)
 # mlflow.set_tracking_uri("file://" + os.path.join(base_dir, "mlruns"))
-mlflow.set_tracking_uri("http://127.0.0.1:5000/")
+mlflow.set_tracking_uri("http://127.0.0.1:5001/")
 
 # Set nama eksperimen
 mlflow.set_experiment("NCF_ManualLogging")
