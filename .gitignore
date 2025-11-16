@@ -1,6 +1,11 @@
 mlruns/
 mlartifacts/ 
+data/
 mlflow.db
 .env
 ncf_model_best.h5
-data/
+architecture.json
+metrics_manual.json
+model_summary.txt
+training_loss.png
+training_metrics.json

@@ -2,10 +2,6 @@ global:
   scrape_interval: 15s
 
 scrape_configs:
-  - job_name: "inference_server"
+  - job_name: "ml_serve_exporter"
     static_configs:
-      - targets: ["localhost:5000"]
-
-  - job_name: "inference_exporter"
-    static_configs:
-      - targets: ["localhost:8000"]
+      - targets: ["localhost:8010"]

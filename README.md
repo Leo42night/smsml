@@ -15,14 +15,13 @@ NOTE: Saya menggunakan WSL yang berbasis Linux (Window peru penyesuaian script u
 conda create -n ncf-env python=3.12
 conda activate ncf-env
 
-# numpy pandas scikit-learn tensorflow scikeras mlflow uvicorn fastapi
 pip install -r requirements.txt
 # --- Didapat dari pip freeze > requirements.txt
 # jika gagal pakai file requiremets.txt
 conda env create -f environment.yml
 # didapat dari conda env export > environment.yml 
 # Jika masih gagal, manual install.
-pip install numpy pandas scikit-learn tensorflow scikeras mlflow uvicorn fastapi
+pip numpy pandas scikit-learn tensorflow scikeras mlflow uvicorn fastapi psutil
 # warning: tensorflow butuh 600MB. Total size env adalah 3.0G
 ```
 
@@ -62,7 +61,7 @@ mlflow run MLProject --env-manager=local
 ```
 - Uji docker di local:
 ```bash
-# build image (5.6GB)
+# build image (5.6GB) (tidak perlu run mlflow server)
 mlflow models build-docker \
   -m models:/CF_Mahasiswa_Sklearn/1 \
   -n <dockerhub_username>/cf_rekomendasi:latest
@@ -97,48 +96,49 @@ docker push <dockerhub_username>/cf_rekomendasi:latest # makan waktu +10 menit (
   - **DOCKER_PASSWORD**
 
 ### Kriteria 4: Log & Alert
-Beberapa server yang akan djalankan (**MLflow Model Serve** hanya opsi untuk test, dapat di-skip):
-| Komponen                   | Perintah                                      | Fungsi                                       | Port   |
-| -------------------------- | --------------------------------------------- | -------------------------------------------- | -------|
-| **MLflow Tracking Server** | `mlflow server --host 127.0.0.1 --port 5001`  | UI untuk eksperimen, log, dan registry model | `5001` |
-| *MLflow Model Serve*       | *`mlflow models serve ... -p 8000`*           | *Menyajikan model untuk prediksi (testing)*  |*`8000`*|
-| **Flask Inference API**    | `python inference.py`                         | REST API untuk prediksi model                | `5000` |
-| **Prometheus Exporter**    | `python prometheus_exporter.py`               | Setup endpoint `/metrics` untuk Prometheus   | `8000` |
-| **Prometheus**             | `prometheus.exe --config.file=prometheus.yml` | Scrape metrics dari API lain                 | `9090` |
-| **Grafana**                | (jalankan grafana)                            | Dashboard visualisasi                        | `3000` |
+Beberapa server yang akan djalankan (**Flask Inference API** hanya opsi untuk test deployment, dapat di-skip)
+
+| Komponen | Perintah | Fungsi | Port |
+| -------- | -------- | ------ | ---- |
+| **MLflow Tracking Server** | `mlflow server --host 127.0.0.1` | UI untuk eksperimen, log, dan registry model | `5001` |
+| **MLflow Model Serve** | `mlflow models serve ... -p 5005` | Menyajikan model untuk prediksi | `5005` |
+| *Flask Inference API* | *`python inference.py`* | REST API untuk prediksi model *(opsional)* | *`8005`* |
+| **Prometheus Exporter** | `python prometheus_exporter.py` | Setup endpoint `/metrics` untuk Prometheus | `8010` |
+| **Prometheus** | `prometheus.exe --config.file=prometheus.yml` | Scrape metrics dari API lain | `9090` |
+| **Grafana** | (jalankan grafana) | Dashboard visualisasi | `3000` |
+
+```
+Client → inferensi.py → (HTTP request) → MLflow Model Serve
+                                 ↓
+                         prometheus_exporter.py
+                          (mengukur & expos metrics)
+```
 
 ### 1. Run Model
 Sebelum run model, run dulu mlflow tracking server:
 ```bash
 conda activate ncf-env
-mlflow server --host 127.0.0.1 --port 5001
-
-# Set tracking URI lebih dulu
-set MLFLOW_TRACKING_URI=http://127.0.0.1:5001 # atau lewat Setting Windows Environment Variable
-# cek dengan echo %MLFLOW_TRACKING_URI%
+mlflow server --host 127.0.0.1
 ```
-PENTING: Karena model path C:\... valid di Windows, kita perlu run model serve di CMD/Powershell.
-MLflow menyediakan dua pendekatan berbeda untuk menyajikan (serve) model:
-| Cara                                | Command                                | Yang dilakukan                                                                                                                  | Kapan digunakan                                                          |
-| ----------------------------------- | -------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------ |
-| **A. MLflow Model Serve (builtin)** | `mlflow models serve -m "models:/..."` | Menjalankan **Uvicorn/FastAPI server internal MLflow** yang otomatis memuat model dan expose endpoint `/invocations`            | Cepat untuk *demo/testing* atau *API sederhana*                          |
-| **B. Flask/Custom Inference API**   | `python inference.py`                  | Kamu sendiri membuat server Flask, dan di dalamnya memanggil `mlflow.pyfunc.load_model()` untuk load model dari registry MLflow | Digunakan saat ingin punya API fleksibel, custom logic, monitoring, dll. |
 
-- **(Opsional) Test Mlflow Model Serve**: Akan membuat REST API yang diakses melalui endpoint `/invocations`.
+- **Mlflow Model Serve**: Akan membuat REST API yang diakses melalui endpoint `/invocations`.
 ```bash
-# Pilih versi (lihat di `mlruns\models\<nama_model>\version-x`). Silakan pilih diantara 2 model berikut:
+# 1. anda pelu set variabel MLFLOW_TRACKING_URI
+# CMD: set MLFLOW_TRACKING_URI=http://127.0.0.1:5000 # atau lewat global Variable
+# CMD: cek dengan echo %MLFLOW_TRACKING_URI%
 
-# 1. Model CF: Random Forest
-# Pastikan model sudah dibuat mengikuti kriteria 2 (modelling.py) atau Kriteria 3.
-mlflow models serve -m "models:/CF_Mahasiswa_Sklearn/1" -p 8000 --no-conda
-
-# 1. Model NCF (🌟 MODEL UTAMA)
+# 2. Pilih versi (lihat di `mlruns\models\<nama_model>\version-x`). Silakan pilih diantara 2 model berikut:
+# - Model NCF (🌟 MODEL UTAMA)
 # Pastikan model sudah dibuat mengikuti Kriteria 2 (**modelling-ncf** atau **modelling_tuning.py**)
-mlflow models serve -m "models:/NCF_ManualLogging/1" -p 8000 --no-conda
+mlflow models serve -m "models:/NCF_ManualLogging/1" -p 5005 --no-conda
+
+# - Model CF (Opsional/Tambahan): Random Forest
+# Pastikan model sudah dibuat mengikuti kriteria 2 (modelling.py) atau Kriteria 3.
+# mlflow models serve -m "models:/CF_Mahasiswa_Sklearn/1" -p 5005 --no-conda
 ```
 Test API MLFlow Model Serve:
 ```bash
-curl -X POST http://127.0.0.1:8000/invocations \
+curl -X POST http://127.0.0.1:5005/invocations \
   -H "Content-Type: application/json" \
   -d '{
         "dataframe_split": {
@@ -150,16 +150,14 @@ curl -X POST http://127.0.0.1:8000/invocations \
 ```
 
 - Server Inferensi
-Server Inferensi menggunakan REST API dari server model **models:/NCF_ManualLogging/1** 
+Default menggunakan REST API dari server model **models:/NCF_ManualLogging/1** 
 ```bash 
 python "Monitoring dan Logging/7.inference.py" 
-# inferensi run in port 5000
+# INFO: inference.py hanya untuk inferensi → tidak ada Prometheus di dalamnya.
 ```
 Test API Server Inferensi:
 ```bash
-curl -X GET http://127.0.0.1:5000
-curl -X GET http://127.0.0.1:5000/metrics
-curl -X POST http://127.0.0.1:5000/predict \
+curl -X POST http://127.0.0.1:8005/predict \
   -H "Content-Type: application/json" \
   -d '[
         {"user": 1, "item": 10},
@@ -177,29 +175,26 @@ python "Monitoring dan Logging/3.prometheus_exporter.py"
 C:\prometheus\prometheus-3.5.0.windows-amd64\prometheus.exe --config.file="Monitoring dan Logging\2.prometheus.yml"
 ```
 
-### 2.a. Gambaran alur data
-
+Test API Server Prometeus Exporter (1348 user, 211 item):
+```bash
+curl -X GET http://127.0.0.1:8010 -w "\n"
+curl -X POST http://127.0.0.1:8010/infer \
+  -H "Content-Type: application/json"  -w "\n" \
+  -d '[
+        {"user": 1, "item": 10},
+        {"user": 2, "item": 20},
+        {"user": 3, "item": 30}
+      ]'
+# {"predictions":[{"0":0.7858941555023193},{"0":0.7942813634872437},{"0":0.8206713199615479}]}
 ```
-Prometheus (9090)
-     ↑
-     │  scrape every 10s
-     │
-Exporter (8000) ──> panggil inference API (5000)
-                    kirim payload ke model
-```
-| Komponen                         | Port             | Peran                                            | Mengakses siapa                           |
-| -------------------------------- | ---------------- | ------------------------------------------------ | ----------------------------------------- |
-| 🧠 `inference.py`                | `5000`           | API model inference                              | menerima request dari client/exporter     |
-| 📊 `3.prometheus_exporter.py`    | `8000`           | Menyediakan endpoint `/metrics` untuk Prometheus | mengirim request ke `inference.py` (5000) |
-| 📈 Prometheus (`prometheus.exe`) | `9090` (default) | Mengumpulkan (scrape) data metrik                | mengakses `exporter` di `8000`            |
 
-### 2.b. Metrik Utama
-
-| Nama Metrik                      | Jenis         | Label       | Deskripsi                                                                                  | Contoh Output di Prometheus                                     |
-| -------------------------------- | ------------- | ----------- | ------------------------------------------------------------------------------------------ | --------------------------------------------------------------- |
-| `mlflow_request_count`           | **Counter**   | `endpoint`  | Menghitung total jumlah request yang diterima oleh endpoint tertentu (misalnya `/predict`) | `mlflow_request_count{endpoint="/predict"} 42`                  |
-| `mlflow_request_latency_seconds` | **Histogram** | `endpoint`  | Mengukur distribusi waktu (latency) eksekusi permintaan per endpoint dalam detik           | `mlflow_request_latency_seconds_sum{endpoint="/predict"} 4.532` |
-| `mlflow_model_output`            | **Gauge**     | (tidak ada) | Menyimpan nilai **prediksi terakhir** dari model MLflow                                    | `mlflow_model_output 0.8721`                                    |
+| Metric                          | Valid | Catatan          |
+| ------------------------------- | ----- | ---------------- |
+| `http_requests_total`           | ✔     | Counter          |
+| `http_request_duration_seconds` | ✔     | Histogram        |
+| `http_requests_throughput`      | ✔     | Gunakan `rate()` |
+| `system_cpu_usage`              | ✔     | Butuh `psutil`   |
+| `system_ram_usage`              | ✔     | Butuh `psutil`   |
 
 ### 3. grafana
 - [Download program](https://grafana.com/grafana/download) & setup path.
@@ -210,7 +205,7 @@ grafana-server.exe --homepath "C:\Program Files\GrafanaLabs\grafana"
 # --homepath? Grafana butuh mengetahui home directory untuk menemukan file konfigurasi default.
 ``` 
 - By default, kredensial masuk dengan username “admin” dan password “admin”.
-> Grafana bisa saja otomatis berjalan di latar belakang, untuk mengeceknya anda dapat menjalankan `netstat -ano | findstr "<nomor_port>"` atau `netstat -ano | find /i "<nomor_port>"`
+> Grafana bisa saja otomatis berjalan di latar belakang, untuk mengeceknya (lihat tips)
 
 **📃 Note:** Alert hanya 1, karena ketika menambahkan alert kedua, dapat error uuid kosong (lihat **Log.txt**).
 
@@ -224,16 +219,8 @@ du -hs /<path>
 conda env list # lihat list env conda
 conda remove --name <nama_env> --all
 ```
-> Kita hanya punya 3 metrik dasar:
->
-> * `mlflow_request_count`
-> * `mlflow_request_latency_seconds`
-> * `mlflow_model_output`
->
-> Tapi dari kombinasi query PromQL, kamu bisa menurunkannya jadi **10 visualisasi berbeda** 🔥
-
-
 
 ## Tips
 - Di CMD: Untuk terminate program jika **Ctrl+C** tidak bekerja, bisa pakai **Ctrl+Pause/Break**.
 - Grafana berjalan di latar belakang, jika ingin restart (ada perubahan konfigurasi) atau ingin stop server nya, tinggal cari `services` pada pencarian windows.
+- Cek Port terpakai: `netstat -ano | findstr "<nomor_port>"` atau `netstat -ano | find /i "<nomor_port>"`
