@@ -1,0 +1,15 @@
+creation_timestamp: 1763278321045
+current_stage: None
+deployment_job_state: null
+description: null
+last_updated_timestamp: 1763278321045
+model_id: m-37ab3efd1d514b1992132b6f397f4476
+name: CF_Mahasiswa_Sklearn
+run_id: 2fcb40471c604183b1fb58717d2e791b
+run_link: null
+source: models:/m-37ab3efd1d514b1992132b6f397f4476
+status: READY
+status_message: null
+storage_location: file:///home/runner/work/smsml/smsml/mlruns/0/models/m-37ab3efd1d514b1992132b6f397f4476/artifacts
+user_id: null
+version: 1
