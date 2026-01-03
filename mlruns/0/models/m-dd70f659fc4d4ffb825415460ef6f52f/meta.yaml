@@ -1,0 +1,10 @@
+artifact_location: file:///home/runner/work/smsml/smsml/mlruns/0/models/m-dd70f659fc4d4ffb825415460ef6f52f/artifacts
+creation_timestamp: 1767479932068
+experiment_id: '0'
+last_updated_timestamp: 1767479934753
+model_id: m-dd70f659fc4d4ffb825415460ef6f52f
+model_type: null
+name: model
+source_run_id: d1461bf77f874375998dc426a3d1c07d
+status: 2
+status_message: null

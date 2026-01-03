@@ -1,0 +1,14 @@
+artifact_uri: file:///home/runner/work/smsml/smsml/mlruns/0/d1461bf77f874375998dc426a3d1c07d/artifacts
+end_time: 1767479937384
+entry_point_name: ''
+experiment_id: '0'
+lifecycle_stage: active
+run_id: d1461bf77f874375998dc426a3d1c07d
+run_name: CF_RandomForest_MLProject
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1767479929796
+status: 3
+tags: []
+user_id: runner
