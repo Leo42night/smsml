@@ -1,5 +1,9 @@
 # Submisi Membangun Sistem Machine Learning
-Modul pembelajaran dari kelas [Dicoding](https://www.dicoding.com/): **Membangun Sistem Machine Learning**
+Modul pembelajaran dari kelas [Dicoding](https://www.dicoding.com/): **Membangun Sistem Machine Learning**<br>
+Sub Repo:
+- Preprocessing: https://github.com/Leo42night/smsml-preprocessing
+- CI/CD: https://github.com/Leo42night/smsml-cicd
+
 
 ## Kriteria
 1. Basic, Skilled, Advance Terpenuhi: File automasi preprocessing (`preprocessing/`) mengembalikan data latih, run di Github Action save di repo.
